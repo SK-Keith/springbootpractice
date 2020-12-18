@@ -78,6 +78,33 @@ public class DataDictService {
         return stringBuilder.toString();
     }
 
+    public String generateDataDictOnlyTable(String databaseName) {
+
+        Map<String, TableBo> tableBoMap = mysqlDao.getTableBoMap(databaseName);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("# ").append(databaseName).append("\n");
+//        stringBuilder.append(" ").append(databaseName).append("\n");
+
+        Map<String, List<ColumnBo>> map = mysqlDao.getTableNameDataDictBoListMap(databaseName);
+        stringBuilder.append("|表名|备注|").append("\n");
+        stringBuilder.append("|-|-|").append("\n");
+        map.forEach((k, v) -> {
+
+
+            final TableBo tableBo = tableBoMap.get(k);
+
+            if (!tableBo.getTABLE_NAME().equalsIgnoreCase("flyway_schema_history")){
+                stringBuilder.append("|")
+                        .append(tableBo.getTABLE_NAME()).append("|")
+                        .append(tableBo.getTABLE_COMMENT()).append("|");
+                stringBuilder.append("\n");
+            }
+
+        });
+        return stringBuilder.toString();
+    }
+
     /**
      * 生成datax所需的迁移mysql到oracle的脚本,基于mysql的元素数据信息得到
      *

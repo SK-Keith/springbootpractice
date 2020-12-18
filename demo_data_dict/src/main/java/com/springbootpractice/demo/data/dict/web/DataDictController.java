@@ -9,11 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,6 +68,21 @@ public class DataDictController {
                 .filter(StringUtils::isNotBlank)
                 .forEach(dbName -> {
                     final String markdownContent = dataDictService.generateDataDict(dbName);
+                    stringBuilder.append(markdownContent).append("\n");
+                });
+
+        return GenerateDataDictResParam.builder().markdownContent(stringBuilder.toString()).build();
+    }
+
+    @PostMapping(path = "/generateDataDictOnlyTable")
+    @ApiOperation(value = "生成数据字典")
+    public GenerateDataDictResParam generateDataDictOnlyTable(@NonNull String databaseName) {
+        Assert.isTrue(StringUtils.isNotBlank(databaseName), "请选择数据库");
+        StringBuilder stringBuilder = new StringBuilder();
+        Arrays.stream(StringUtils.split(databaseName, ","))
+                .filter(StringUtils::isNotBlank)
+                .forEach(dbName -> {
+                    final String markdownContent = dataDictService.generateDataDictOnlyTable(dbName);
                     stringBuilder.append(markdownContent).append("\n");
                 });
 
